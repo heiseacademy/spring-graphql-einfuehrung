@@ -1,0 +1,86 @@
+enum ReactionType {
+    like,
+    laugh,
+    heart,
+    prosit,
+}
+
+type Reaction {
+    id: ID!
+    createdAt: String!
+
+    type: ReactionType!
+
+    givenBy: Member!
+}
+
+type Comment implements Node {
+    id: ID!
+
+    createdAt: String!
+    writtenBy: Member!
+
+    content: String!
+}
+
+"""
+This is a `Story`.
+"""
+type Story implements Node {
+    id: ID!
+    title: String!
+
+    "Returns the date and time when this story has been published"
+    createdAt: String!
+
+    writtenBy: Member!
+    body: String!
+
+    excerpt(maxLength: Int! = 100): String!
+    reactions: [Reaction!]!
+    comments: [Comment!]!
+}
+
+type Member implements Node {
+    id: ID!
+
+    createdAt: String!
+    skills: String
+}
+
+interface Node {
+    id: ID!
+}
+
+type Query {
+
+    node(id: ID!): Node
+
+    "Returns the newest `Story` in our backend or null if no Story available"
+    story(storyId: ID): Story
+
+    members(page: Int, size: Int): [Member!]!
+
+}
+
+input ToggleReactionInput {
+    storyId: ID!
+    memberId: ID!
+    reactionType: ReactionType!
+}
+
+type AddCommentSuccessPayload {
+    newComment: Comment!
+}
+
+type AddCommentFailedPayload {
+    errorMessage: String!
+}
+
+union AddCommentPayload = AddCommentSuccessPayload | AddCommentFailedPayload
+
+
+type Mutation {
+    toggleReaction(input: ToggleReactionInput!): Story!
+    addComment(storyId: ID!, memberId: ID!, content: String!): AddCommentPayload!
+}

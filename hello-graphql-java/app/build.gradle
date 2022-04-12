@@ -1,0 +1,25 @@
+plugins {
+  id 'application'
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation "org.slf4j:slf4j-api:1.7.35"
+  implementation "org.slf4j:slf4j-simple:1.7.35"
+
+  implementation 'com.graphql-java:graphql-java:17.3'
+
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+}
+
+application {
+  mainClass = 'nh.graphql.GraphQLApi'
+}
+
+tasks.named('test') {
+  // Use JUnit Platform for unit tests.
+  useJUnitPlatform()
+}

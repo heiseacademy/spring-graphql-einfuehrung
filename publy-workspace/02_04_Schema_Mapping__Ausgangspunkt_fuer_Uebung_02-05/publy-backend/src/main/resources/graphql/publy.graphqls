@@ -1,0 +1,27 @@
+"""
+This is a `Story`.
+"""
+type Story {
+    id: ID!
+    title: String!
+
+    "Returns the date and time when this story has been published"
+    createdAt: String!
+
+    writtenBy: Member!
+    body: String!
+
+    excerpt(maxLength: Int! = 100): String!
+}
+
+type Member {
+    id: ID!
+    createdAt: String!
+
+    skills: String
+}
+
+type Query {
+    "Returns the newest `Story` in our backend or null if no Story available"
+    story(storyId: ID): Story
+}

@@ -1,0 +1,94 @@
+"""This represents a date in iso date format"""
+scalar DateTime
+
+enum ReactionType {
+    like,
+    laugh,
+    heart,
+    prosit,
+}
+
+type Reaction {
+    id: ID!
+    createdAt: DateTime!
+
+    type: ReactionType!
+
+    givenBy: Member!
+}
+
+type Comment implements Node {
+    id: ID!
+
+    createdAt: DateTime!
+    writtenBy: Member!
+
+    content: String!
+}
+
+"""
+This is a `Story`.
+"""
+type Story implements Node {
+    id: ID!
+    title: String!
+
+    "Returns the date and time when this story has been published"
+    createdAt: DateTime!
+
+    writtenBy: Member!
+    body: String!
+
+    excerpt(maxLength: Int! = 100): String!
+    reactions: [Reaction!]!
+    comments: [Comment!]!
+}
+
+type Member implements Node {
+    id: ID!
+
+    createdAt: DateTime!
+    skills: String
+}
+
+interface Node {
+    id: ID!
+}
+
+type Query {
+    node(id: ID!): Node
+
+    "Returns the newest `Story` in our backend or null if no Story available"
+    story(storyId: ID): Story
+
+    stories(newerThan: DateTime!): [Story!]!
+
+    members(page: Int, size: Int): [Member!]!
+}
+
+input ToggleReactionInput {
+    storyId: ID!
+    memberId: ID!
+    reactionType: ReactionType!
+}
+type AddCommentSuccessPayload {
+    newComment: Comment!
+}
+type AddCommentFailedPayload {
+    errorMessage: String!
+}
+union AddCommentPayload = AddCommentSuccessPayload | AddCommentFailedPayload
+
+
+type Mutation {
+    toggleReaction(input: ToggleReactionInput!): Story!
+    addComment(storyId: ID!, memberId: ID!, content: String!): AddCommentPayload!
+}
+
+type OnNewCommentEvent {
+    newComment: Comment!
+}
+
+type Subscription {
+    onNewComment(storyId: ID!): OnNewCommentEvent!
+}
